@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const User = require("../models/User");
+const Server = require("../models/Server");
 const months = require("../months.json");
 
 module.exports = {
@@ -23,6 +25,33 @@ module.exports = {
         .setMaxValue(31)
     ),
   async execute(interaction) {
-    await interaction.reply({ content: "yert", ephemeral: true });
+    try {
+      let month = interaction.options.getString("month");
+      let day = interaction.options.getNumber("day");
+
+      let user = new User({
+        user_id: interaction.user.id,
+        user_name: `${interaction.user.username}#${interaction.user.discriminator}`,
+        birth_month: month,
+        birth_day: day,
+      });
+
+      await Server.findOneAndUpdate(
+        {
+          server_id: interaction.guildId,
+        },
+        { $addToSet: { birthdays: user._id } }
+      );
+
+      await interaction.reply({
+        content: "Birthday added to database!",
+        ephemeral: true,
+      });
+    } catch (error) {
+      await interaction.reply({
+        content: `There was an error: ${error}`,
+        ephemeral: true,
+      });
+    }
   },
 };
