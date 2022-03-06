@@ -9,12 +9,18 @@ module.exports = {
     )
     .addStringOption((option) =>
       option
-        .setName("add")
-        .setDescription(
-          "Add the month you were born in, usage: /birthday add: MONTH"
-        )
-        .setChoices([["January", "january"]])
+        .setName("month")
+        .setDescription("Pick your birthday month")
+        .setChoices(months)
         .setRequired(true)
+    )
+    .addNumberOption((option) =>
+      option
+        .setName("day")
+        .setDescription("Pick the day you were born on")
+        .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(31)
     ),
   async execute(interaction) {
     await interaction.reply({ content: "yert", ephemeral: true });
