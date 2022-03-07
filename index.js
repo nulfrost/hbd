@@ -28,14 +28,19 @@ client.once("ready", async (bot) => {
 });
 
 client.on("guildCreate", async (server) => {
-  console.info("Joined new server, registering into database: ", server.name);
-
-  await prisma.server.create({
-    data: {
-      server_id: server.id,
-      server_name: server.name,
-    },
-  });
+  try {
+    console.info("Joined new server, registering into database: ", server.name);
+    await prisma.server.create({
+      data: {
+        server_id: server.id,
+        server_name: server.name,
+      },
+    });
+  } catch {
+    console.error(
+      "Likely the server has already been registered, this error is okay to ignore"
+    );
+  }
 });
 
 client.on("interactionCreate", async (interaction) => {

@@ -1,7 +1,7 @@
 {
   "name": "hbd",
   "version": "1.0.0",
-  "description": "",
+  "description": "a bot that remembers your birthday when your friends don't",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",

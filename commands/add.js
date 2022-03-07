@@ -4,7 +4,7 @@ const months = require("../months.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("birthday")
+    .setName("add")
     .setDescription(
       "Adds your birthday to the database of birthday's in your server"
     )
