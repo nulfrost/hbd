@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const User = require("../models/User");
-const Server = require("../models/Server");
+const { prisma } = require("../db/prisma");
 const months = require("../months.json");
 
 module.exports = {
@@ -29,19 +28,21 @@ module.exports = {
       let month = interaction.options.getString("month");
       let day = interaction.options.getNumber("day");
 
-      let user = new User({
-        user_id: interaction.user.id,
-        user_name: `${interaction.user.username}#${interaction.user.discriminator}`,
-        birth_month: month,
-        birth_day: day,
-      });
-
-      await Server.findOneAndUpdate(
-        {
+      await prisma.server.update({
+        where: {
           server_id: interaction.guildId,
         },
-        { $addToSet: { birthdays: user._id } }
-      );
+        data: {
+          birthdays: {
+            create: {
+              user_id: interaction.user.id,
+              birth_day: day,
+              birth_month: month,
+              user_name: `${interaction.user.username}#${interaction.user.discriminator}`,
+            },
+          },
+        },
+      });
 
       await interaction.reply({
         content: "Birthday added to database!",
@@ -49,7 +50,8 @@ module.exports = {
       });
     } catch (error) {
       await interaction.reply({
-        content: `There was an error: ${error}`,
+        content:
+          "You've already added your birthday to the database, please remove or edit your entry",
         ephemeral: true,
       });
     }

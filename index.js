@@ -1,7 +1,6 @@
 const fs = require("node:fs");
 const { Client, Collection, Intents } = require("discord.js");
-const mongoose = require("mongoose");
-const Server = require("./models/Server");
+const { prisma } = require("./db/prisma");
 require("dotenv").config();
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -19,7 +18,6 @@ for (const file of commandFiles) {
 
 client.once("ready", async (bot) => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/hbddb");
     console.log(
       "Successfully connected to the database.",
       `Bot online @ ${bot.user.username}#${bot.user.discriminator}`
@@ -31,9 +29,12 @@ client.once("ready", async (bot) => {
 
 client.on("guildCreate", async (server) => {
   console.info("Joined new server, registering into database: ", server.name);
-  await Server.create({
-    server_id: server.id,
-    name: server.name,
+
+  await prisma.server.create({
+    data: {
+      server_id: server.id,
+      server_name: server.name,
+    },
   });
 });
 
